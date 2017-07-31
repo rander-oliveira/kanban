@@ -11,43 +11,127 @@
   */
 
   $return = array(
-    'error' => '',
+    'error' => 'false',
     'message' => '',
-    'response' => '',
+    'response' => null,
   );
 
   if ($action != 'create' && $action != 'edit' && $action != 'delete' && $action != 'move') {
     $return['error'] = true;
     $return['message'] = "Bad request";
-    $return['response'] = null;
   } else {
     if ($action == 'create') {
+      // CREATE TASK
+
       $name = (isset($_REQUEST['name'])) ? $_REQUEST['name'] : '';
 
       if ($name == '') {
         $return['error'] = true;
         $return['message'] = "Name task is required";
-        $return['response'] = null;
       } else {
         $description = (isset($_REQUEST['description'])) ? $_REQUEST['description'] : '';
-        $date = date( [, $timestamp])
         $status = 1;
 
-        include_once "../settings/connectDb.php";
-          INSERT INTO `task` (`id`, `name`, `description`, `creation_date`, `status`, `last_update`) VALUES (NULL, 'test', 'bla bla bla', '2017-07-31', '1', '2017-07-31');
-        $query = "INSERT INTO 'task' ('name', 'description', 'creation_date', 'status', 'last_update') VALUES ()";
+        include_once "../settings/db.php";
+
+        try {
+          $pdo = new PDO('mysql:host=localhost;dbname=to_do_list', $usr, $psw);
+          $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+          $stmt = $pdo->prepare('INSERT INTO task VALUES(:id, :name, :description, :status)');
+          $stmt->execute(array(
+            ':id' => null,
+            ':name' => $name,
+            ':description' => $description,
+            ':status' => $status,
+          ));
+        } catch(PDOException $e) {
+          $return['error'] = true;
+          $return['message'] = $e->getMessage();
+        }
+      }
+    } elseif ($action == 'edit') {
+      //EDIT TASK
+
+      $id = (isset($_REQUEST['id'])) ? $_REQUEST['id'] : '';
+      $name = (isset($_REQUEST['name'])) ? $_REQUEST['name'] : '';
+
+      if ($id == '' || $name == '') {
+        $return['error'] = true;
+        $return['message'] = "ID and name task are required";
+      } else {
+        $description = (isset($_REQUEST['description'])) ? $_REQUEST['description'] : '';
+
+        include_once "../settings/db.php";
+
+        try {
+          $pdo = new PDO('mysql:host=localhost;dbname=to_do_list', $usr, $psw);
+          $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+          $stmt = $pdo->prepare('UPDATE task SET name = :name, description = :description  WHERE id = :id');
+          $stmt->execute(array(
+            ':name' => $nome,
+            ':description' => $description,
+            ':id'   => $id,
+          ));
+        } catch(PDOException $e) {
+          $return['error'] = true;
+          $return['message'] = $e->getMessage();
+        }
+      }
+    } elseif ($action == 'move') {
+      // MOVE TASK
+
+      $id = (isset($_REQUEST['id'])) ? $_REQUEST['id'] : '';
+      $status = (isset($_REQUEST['status'])) ? $_REQUEST['status'] : '';
+
+      if ($status <= 0 || $status >= 4 || id == '') {
+        $return['error'] = true;
+        $return['message'] = "ID and status are required";
+      } else {
+        include_once "../settings/db.php";
+
+        try {
+          $pdo = new PDO('mysql:host=localhost;dbname=to_do_list', $usr, $psw);
+          $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+          $stmt = $pdo->prepare('UPDATE task SET status = :status  WHERE id = :id');
+          $stmt->execute(array(
+            ':status' => $status,
+            ':id'   => $id,
+          ));
+        } catch(PDOException $e) {
+          $return['error'] = true;
+          $return['message'] = $e->getMessage();
+        }
+      }
+    } else {
+      //DELETE TASK
+
+      $id = (isset($_REQUEST['id'])) ? $_REQUEST['id'] : '';
+
+      if ($id == '') {
+        $return['error'] = true;
+        $return['message'] = "ID is required";
+      } else {
+        include_once "../settings/db.php";
+
+        try {
+          $pdo = new PDO('mysql:host=localhost;dbname=to_do_list', $usr, $psw);
+          $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+          $stmt = $pdo->prepare('DELETE FROM task WHERE id = :id');
+          $stmt->execute(array(
+            ':id' => $id,
+          ));
+        } catch(PDOException $e) {
+          $return['error'] = true;
+          $return['message'] = $e->getMessage();
+        }
       }
     }
   }
 
-
-  // cria a instrução SQL que vai selecionar os dados
-  $query = sprintf("SELECT identificador, nome, telefone FROM cadastro");
-  // executa a query
-  $dados = mysql_query($query, $con) or die(mysql_error());
-  // transforma os dados em um array
-  $linha = mysql_fetch_assoc($dados);
-  // calcula quantos dados retornaram
-  $total = mysql_num_rows($dados);
+  echo json_encode($return);
 
 ?>
