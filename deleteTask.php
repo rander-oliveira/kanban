@@ -6,6 +6,7 @@
         <h4 class="modal-title">Delete task</h4>
       </div>
       <div class="modal-body">
+        <input type="hidden" class="ipt-task-id" value="">
         <div class="alert alert-danger alert-dismissible fade in" role="alert">
           <h4>Are you sure you want to delete this task?</h4>
           <p>This is an irreversible action</p>

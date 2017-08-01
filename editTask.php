@@ -6,7 +6,7 @@
       </div>
       <div class="modal-body">
         <form id="form-edit-task">
-          <input type="hidden" id="ipt-task-id" value="">
+          <input type="hidden" class="ipt-task-id" value="">
           <div class="form-group">
             <label for="taskName">Task name*</label>
             <input type="text" class="form-control" id="ipt-task-name" placeholder="Task name">

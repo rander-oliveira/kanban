@@ -25,11 +25,16 @@ h2{
 .tasks-area{
   min-height: 300px;
 }
-.task{
+.task, .task-space{
   padding: 5px 10px;
   border-radius: 3px;
   margin: 3px 10px;
   background: #fff;
+}
+.task-space{
+  height: 60px;
+  background: none;
+  border: dotted #fff 1px;
 }
 .task .task-title{
   display: block;

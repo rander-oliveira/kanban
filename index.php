@@ -21,32 +21,21 @@
           <div class="col-xs-4">
             <div id="todo">
               <h2>To do</h2>
-              <div class="tasks-area">
-                <div class="task">
-                  <span class="task-title">Meu título</span>
-                  <p class="task-description">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vulputate dignissim mi a hendrerit. Cras nec tellus in sem bibendum porta venenatis quis mi.
-                  </p>
-                  <div class="task-menu">
-                    <span class="glyphicon glyphicon-pencil edit-task-ico" aria-hidden="true" title="Edit task" data-toggle="modal" data-target="#edit-task"></span>
-                    <span class="glyphicon glyphicon-trash delete-task-ico" aria-hidden="true" title="Delete task" data-toggle="modal" data-target="#delete-task"></span>
-                    <span class="glyphicon glyphicon-move move-task-ico" aria-hidden="true" title="Move task"></span>
-                  </div>
-                </div>
+              <div id="tasks-todo" class="tasks-area" data-task-status="1">
               </div>
             </div>
           </div>
           <div class="col-xs-4">
             <div id="doing">
               <h2>Doing</h2>
-              <div class="tasks-area">
+              <div id="tasks-doing" class="tasks-area" data-task-status="2">
               </div>
             </div>
           </div>
           <div class="col-xs-4">
             <div id="done">
               <h2>Done</h2>
-              <div class="tasks-area">
+              <div id="tasks-done" class="tasks-area" data-task-status="3">
               </div>
             </div>
           </div>
@@ -60,6 +49,7 @@
     ?>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="js/scripts.js"></script>
 

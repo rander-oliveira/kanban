@@ -11,12 +11,12 @@
   */
 
   $return = array(
-    'error' => 'false',
+    'error' => false,
     'message' => '',
     'response' => null,
   );
 
-  if ($action != 'create' && $action != 'edit' && $action != 'delete' && $action != 'move') {
+  if ($action != 'create' && $action != 'edit' && $action != 'delete' && $action != 'move' && $action != 'load') {
     $return['error'] = true;
     $return['message'] = "Bad request";
   } else {
@@ -49,6 +49,16 @@
           $return['error'] = true;
           $return['message'] = $e->getMessage();
         }
+
+        if(!$return['error']) {
+          $return['message'] = "Task was created with success!";
+          $return['response'] = array(
+            'id' => $pdo->lastInsertId(),
+            'name' => $name,
+            'description' => $description,
+            'status' => $status,
+          );
+        }
       }
     } elseif ($action == 'edit') {
       //EDIT TASK
@@ -70,13 +80,22 @@
 
           $stmt = $pdo->prepare('UPDATE task SET name = :name, description = :description  WHERE id = :id');
           $stmt->execute(array(
-            ':name' => $nome,
+            ':name' => $name,
             ':description' => $description,
             ':id'   => $id,
           ));
         } catch(PDOException $e) {
           $return['error'] = true;
           $return['message'] = $e->getMessage();
+        }
+
+        if(!$return['error']) {
+          $return['message'] = "Task was edited with success!";
+          $return['response'] = array(
+            'id' => $id,
+            'name' => $name,
+            'description' => $description,
+          );
         }
       }
     } elseif ($action == 'move') {
@@ -85,7 +104,7 @@
       $id = (isset($_REQUEST['id'])) ? $_REQUEST['id'] : '';
       $status = (isset($_REQUEST['status'])) ? $_REQUEST['status'] : '';
 
-      if ($status <= 0 || $status >= 4 || id == '') {
+      if ($status <= 0 || $status >= 4 || empty($id)) {
         $return['error'] = true;
         $return['message'] = "ID and status are required";
       } else {
@@ -104,8 +123,16 @@
           $return['error'] = true;
           $return['message'] = $e->getMessage();
         }
+
+        if(!$return['error']) {
+          $return['message'] = "Task was moved with success!";
+          $return['response'] = array(
+            'id' => $id,
+            'status' => $status,
+          );
+        }
       }
-    } else {
+    } elseif($action == 'delete') {
       //DELETE TASK
 
       $id = (isset($_REQUEST['id'])) ? $_REQUEST['id'] : '';
@@ -120,14 +147,43 @@
           $pdo = new PDO('mysql:host=localhost;dbname=to_do_list', $usr, $psw);
           $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-          $stmt = $pdo->prepare('DELETE FROM task WHERE id = :id');
+          $stmt = $pdo->prepare('UPDATE task SET status = :status  WHERE id = :id');
           $stmt->execute(array(
-            ':id' => $id,
+            ':status' => 4,
+            ':id'   => $id,
           ));
         } catch(PDOException $e) {
           $return['error'] = true;
           $return['message'] = $e->getMessage();
         }
+
+        if(!$return['error']) {
+          $return['message'] = "Task was deleted with success!";
+          $return['response'] = array(
+            'id' => $id,
+          );
+        }
+      }
+    } else {
+      //LOAD TASKS
+      $rows = null;
+
+      include_once "../settings/db.php";
+
+      try {
+        $pdo = new PDO('mysql:host=localhost;dbname=to_do_list', $usr, $psw);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        $query = $pdo->query("SELECT * FROM task WHERE status > 0 AND status < 4;");
+        $rows = $query->fetchAll(PDO::FETCH_ASSOC);
+      } catch(PDOException $e) {
+        $return['error'] = true;
+        $return['message'] = $e->getMessage();
+      }
+
+      if(!$return['error']) {
+        $return['message'] = "Tasks was loaded with success!";
+        $return['response'] = $rows;
       }
     }
   }
